@@ -536,3 +536,59 @@ const Ref = () => {
 }
 ```
 ref안의 값이 바뀌어도 컴포넌트가 렌더링 되지 않는다.
+
+## Chapter 9
+
+### CSS Module
+
+CSS를 불러와서 사용할 때 클래스 이름을 고유한 값 ([파일이름]\_[클래스 이름]_[해시값]) 형태로 자동으로 만들어서 컴포넌트 스타일 클래스 이름이 중첩되는 현상을 방지 해준다. module.css 확장자로 파일을 저장해주면 된다. 특정 클래스가 웹페이지에서 전역적으로 사용되는 경우ㅜ라면 :global을 앞에 입력하여 글로벌 CSS임을 명시해 주면 된다. 
+
+### classnames
+
+classnames는 CSS 클래스를 조건부로 설정할 때 매우 유용한 라이브러리이다. 또한 CSS Module을 사용할 때 이 라이브러리를 사용하면 여러 클래스를 적용할 때 매우 편리하다.
+```
+$ yarn add classnames
+```
+```javascript
+import classNames form 'classnames';
+
+classNames('one', 'two');               // 'one two'
+classNames('one', {two : true});        // 'one two'
+classNames('one', {two : false});       // 'one'
+classNames('one', ['two','three']);     // 'one two three'
+
+const myClass = 'hello'
+classNames(one, myClass, {myCondition : true}); // 'one hello myCondition'
+```
+이런 식으로 여러 가지 종류의 파라미터를 조합해 CSS 클래스를 설정할 수 있기 때문에 컴포넌트에서 조건부로 클래스를 설정할 때 매우 편한다. 예를 들어 props 값에 따라 다른 스타일을 주기가 쉽다.
+```javascript
+
+const MyComponent = ({highlight, theme}) => (
+    <div classNames={('MyComponent', {highlight}, theme)}> Hello </div>
+);
+```
+위에서 highlight은 boolean 값으로 true이면 'highlight' 클래스가 적용되며 theme으로 전달받은 문자열은 내용 그대로 클래스에 적용된다.
+
+#### CSS Module과 함꼐 사용하기
+
+CSS Module과 함께 사용하면 CSS Module 사용이 훨씬 쉬워진다. classnames에 내장되어 있는 bind 함수를 사용하면 클래스를 넣어 줄 때마다 styles.[클래스 이름] 형태를 사용할 필요가 없습니다. 사전에 미리 styles에서 받아 온 후 사용하게끔 설정해두고 cx('클래스 이름', '클래스 이름2') 형태로 사용할 수 있다. 
+```javascript
+import classNames form 'classnames/bind';
+const cx = classNames.bind(styles); //미리 styles에서 클래스를 받아오도록 설정하고
+
+const CSSModule = () => {
+    return (
+        <div className={cx('wrapper', 'inverted')}>
+            Hello <span className="something">CSS</span>
+        </div>
+    )
+}
+```
+
+#### SASS와 함께 사용하기
+
+파일확장자를 .module.scss 로 사용하면 자동으로 고유한 클래스 이름으로 지정한다.
+
+#### CSS Module이 아닌 파일에서 CSS Module 사용하기
+
+CSS Module에서 글로벌 클래스르 정의할 때 :global을 사용했던 것처럼 CSS Module이 아닌 일반 .css/.scss 파일에서도 :local을 사용하여 CSS Module을 사용할 수 있다.
